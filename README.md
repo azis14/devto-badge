@@ -20,21 +20,6 @@ Generate beautiful SVG badges for your Dev.to articles that can be embedded anyw
 - ⚡ **Fast**: Serverless function with 1-hour caching
 - 🔒 **Secure**: Sanitizes all text content for safe SVG rendering
 
-## 🚀 Quick Start
-
-### Deploy to Vercel (Recommended)
-
-1. Click the "Deploy with Vercel" button above
-2. Follow the deployment steps
-3. Your badge API will be available at `https://your-app.vercel.app/api`
-
-### Deploy to Netlify
-
-1. Fork this repository
-2. Connect your GitHub account to Netlify
-3. Create a new site from your forked repository
-4. Your badge API will be available at `https://your-app.netlify.app/api`
-
 ## 📖 Usage
 
 Once deployed, you can generate badges using these methods:
