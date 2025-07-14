@@ -12,6 +12,10 @@
 // ![Dev.to Post Card](https://your-vercel-app-url.vercel.app/api?username=your-username&slug=your-post-slug)
 // Or by parsing the full URL:
 // ![Dev.to Post Card](https://your-vercel-app-url.vercel.app/api?url=https://dev.to/user/post-slug)
+//
+// Theme support:
+// Add &theme=dark for dark mode or &theme=light (default) for light mode:
+// ![Dev.to Post Card](https://your-vercel-app-url.vercel.app/api?username=your-username&slug=your-post-slug&theme=dark)
 
 
 // We use node-fetch for making API requests on the server.
@@ -46,7 +50,12 @@ function sanitizeText(text) {
 // Main handler for the serverless function
 module.exports = async (req, res) => {
     try {
-        let { username, slug, url: postUrl } = req.query;
+        let { username, slug, url: postUrl, theme = 'light' } = req.query;
+
+        // Validate theme parameter
+        if (!['light', 'dark'].includes(theme)) {
+            theme = 'light';
+        }
 
         // --- 1. Parse Input ---
         if (postUrl) {
@@ -106,77 +115,84 @@ module.exports = async (req, res) => {
         const svg = `
             <svg width="450" height="250" viewBox="0 0 450 250" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style>
+                    /* Base styles */
                     .card {
-                        font-family: 'Segoe UI', 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
-                        border-radius: 8px;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
                     }
-                    .title {
-                        font-size: 18px;
-                        font-weight: 700;
-                        fill: #111827;
+                    
+                    /* Light theme (default) */
+                    .bg-white { fill: #ffffff; }
+                    .border-gray-200 { stroke: #e5e7eb; }
+                    .text-gray-900 { fill: #111827; }
+                    .text-gray-700 { fill: #374151; }
+                    .text-gray-500 { fill: #6b7280; }
+                    .text-indigo-600 { fill: #4f46e5; }
+                    
+                    /* Dark theme */
+                    .dark .bg-white { fill: #1f2937; }
+                    .dark .border-gray-200 { stroke: #374151; }
+                    .dark .text-gray-900 { fill: #f9fafb; }
+                    .dark .text-gray-700 { fill: #d1d5db; }
+                    .dark .text-gray-500 { fill: #9ca3af; }
+                    .dark .text-indigo-600 { fill: #818cf8; }
+                    
+                    /* Typography */
+                    .text-lg { font-size: 18px; }
+                    .text-sm { font-size: 14px; }
+                    .text-xs { font-size: 12px; }
+                    .font-bold { font-weight: 700; }
+                    .font-medium { font-weight: 500; }
+                    .font-semibold { font-weight: 600; }
+                    
+                    /* Shadows for light theme */
+                    .shadow-sm {
+                        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
                     }
-                    .author {
-                        font-size: 14px;
-                        font-weight: 500;
-                        fill: #374151;
+                    
+                    /* Shadows for dark theme */
+                    .dark .shadow-sm {
+                        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
                     }
-                    .stats {
-                        font-size: 12px;
-                        font-weight: 500;
-                        fill: #6b7280;
-                    }
-                    .tags {
-                        font-size: 12px;
-                        font-weight: 600;
-                        fill: #4f46e5;
-                    }
-                    .dark .title { fill: #ffffff; }
-                    .dark .author { fill: #d1d5db; }
-                    .dark .stats { fill: #9ca3af; }
-                    .dark .tags { fill: #818cf8; }
                 </style>
                 
-                <!-- Card Background -->
-                <rect class="card" x="0.5" y="0.5" width="449" height="249" rx="8" fill="white" stroke="#e5e7eb"/>
+                <g class="${theme === 'dark' ? 'dark' : ''}">
+                    <!-- Card Background with shadow -->
+                    <rect class="card bg-white border-gray-200 shadow-sm" x="0.5" y="0.5" width="449" height="249" rx="8" stroke-width="1"/>
                 
-                <!-- Dark Mode Card -->
-                <g class="dark">
-                     <rect class="card" x="0.5" y="0.5" width="449" height="249" rx="8" fill="#1f2937" stroke="#374151" style="display: none;"/>
-                </g>
-                
-                <!-- Cover Image -->
-                ${coverImageBase64 ? `
-                    <defs>
-                        <clipPath id="clipCover">
-                            <rect x="15" y="15" width="420" height="100" rx="6"/>
-                        </clipPath>
-                    </defs>
-                    <image href="${coverImageBase64}" x="15" y="15" height="100" width="420" clip-path="url(#clipCover)" preserveAspectRatio="xMidYMid slice"/>
-                ` : ''}
+                    <!-- Cover Image -->
+                    ${coverImageBase64 ? `
+                        <defs>
+                            <clipPath id="clipCover">
+                                <rect x="15" y="15" width="420" height="100" rx="6"/>
+                            </clipPath>
+                        </defs>
+                        <image href="${coverImageBase64}" x="15" y="15" height="100" width="420" clip-path="url(#clipCover)" preserveAspectRatio="xMidYMid slice" opacity="0.95"/>
+                    ` : ''}
 
-                <!-- Content Area -->
-                <g transform="translate(15, 130)">
-                    <!-- Title -->
-                    <text x="0" y="20" class="title">${titleLine1}</text>
-                    ${titleLine2 ? `<text x="0" y="42" class="title">${titleLine2}</text>` : ''}
-                    
-                    <!-- Author Info -->
-                    <g transform="translate(0, 70)">
-                        ${profileImageBase64 ? `
-                            <defs>
-                                <clipPath id="clipAvatar">
-                                    <circle cx="14" cy="14" r="14"/>
-                                </clipPath>
-                            </defs>
-                            <image href="${profileImageBase64}" x="0" y="0" height="28" width="28" clip-path="url(#clipAvatar)"/>
-                        ` : ''}
-                        <text x="36" y="19" class="author">${sanitizeText(user.name)}</text>
-                    </g>
+                    <!-- Content Area -->
+                    <g transform="translate(15, 130)">
+                        <!-- Title -->
+                        <text x="0" y="20" class="text-gray-900 text-lg font-bold">${titleLine1}</text>
+                        ${titleLine2 ? `<text x="0" y="42" class="text-gray-900 text-lg font-bold">${titleLine2}</text>` : ''}
+                        
+                        <!-- Author Info -->
+                        <g transform="translate(0, 70)">
+                            ${profileImageBase64 ? `
+                                <defs>
+                                    <clipPath id="clipAvatar">
+                                        <circle cx="14" cy="14" r="14"/>
+                                    </clipPath>
+                                </defs>
+                                <image href="${profileImageBase64}" x="0" y="0" height="28" width="28" clip-path="url(#clipAvatar)"/>
+                            ` : ''}
+                            <text x="36" y="19" class="text-gray-700 text-sm font-medium">${sanitizeText(user.name)}</text>
+                        </g>
 
-                    <!-- Bottom Stats -->
-                    <g transform="translate(0, 105)">
-                         <text class="stats">❤️ ${public_reactions_count} Reactions  •  ${reading_time_minutes} min read</text>
-                         <text x="420" y="0" text-anchor="end" class="tags">${sanitizeText(tagsString)}</text>
+                        <!-- Bottom Stats -->
+                        <g transform="translate(0, 105)">
+                             <text class="text-gray-500 text-xs font-medium">❤️ ${public_reactions_count} Reactions  •  ${reading_time_minutes} min read</text>
+                             <text x="420" y="0" text-anchor="end" class="text-indigo-600 text-xs font-semibold">${sanitizeText(tagsString)}</text>
+                        </g>
                     </g>
                 </g>
             </svg>
@@ -189,13 +205,23 @@ module.exports = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        // Return a generic error SVG
+        // Return a generic error SVG with theme support
         const errorSvg = `
             <svg width="450" height="250" viewBox="0 0 450 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-                 <rect x="0.5" y="0.5" width="449" height="249" rx="8" fill="white" stroke="#e5e7eb"/>
-                 <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16px" fill="#ef4444">
-                    Could not generate Dev.to card.
-                 </text>
+                <style>
+                    .error-bg { fill: #ffffff; }
+                    .error-border { stroke: #e5e7eb; }
+                    .error-text { fill: #ef4444; }
+                    .dark .error-bg { fill: #1f2937; }
+                    .dark .error-border { stroke: #374151; }
+                    .dark .error-text { fill: #f87171; }
+                </style>
+                <g class="${theme === 'dark' ? 'dark' : ''}">
+                    <rect class="error-bg error-border" x="0.5" y="0.5" width="449" height="249" rx="8" stroke-width="1"/>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16px" class="error-text">
+                        Could not generate Dev.to card.
+                    </text>
+                </g>
             </svg>
         `;
         res.setHeader('Content-Type', 'image/svg+xml');
