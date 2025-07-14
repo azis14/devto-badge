@@ -16,6 +16,7 @@ Generate beautiful SVG badges for your Dev.to articles that can be embedded anyw
 - 👤 **Author Info**: Shows author name and profile picture
 - 📊 **Stats Display**: Reactions count and reading time
 - 🏷️ **Tags**: Displays up to 3 article tags
+- 🎛️ **Customizable Display**: Hide specific components as needed
 - ⚡ **Fast**: Serverless function with 1-hour caching
 - 🔒 **Secure**: Sanitizes all text content for safe SVG rendering
 
@@ -58,6 +59,25 @@ Add `&theme=dark` for dark mode:
 ![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG&theme=dark)
 ```
 
+### Hiding Components
+
+Hide specific components using the `hide` parameter:
+
+```markdown
+![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG&hide=reactions,tags)
+```
+
+Available components to hide:
+- `reactions` - Hide the reactions count
+- `tags` - Hide the article tags
+- `minreads` - Hide the reading time
+- `image` - Hide the cover image
+
+Example hiding multiple components:
+```markdown
+![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG&hide=reactions,tags,minreads,image)
+```
+
 ## 🎯 Examples
 
 ### Light Theme (Default)
@@ -78,8 +98,19 @@ Add `&theme=dark` for dark mode:
 | `slug` | string | Yes* | Article slug | `a-journey-to-be-a-pragmatic-programmer-524m` |
 | `url` | string | Yes* | Full Dev.to article URL | `https://dev.to/muhammadazis/a-journey-to-be-a-pragmatic-programmer-524m` |
 | `theme` | string | No | Theme mode (`light` or `dark`) | `dark` |
+| `hide` | string | No | Comma-separated list of components to hide | `reactions,tags,minreads,image` |
 
 *Either provide `username` + `slug` OR `url`
+
+### Hide Parameter Options
+
+The `hide` parameter accepts a comma-separated list of the following values:
+- `reactions` - Hides the reactions count
+- `tags` - Hides the article tags
+- `minreads` - Hides the reading time
+- `image` - Hides the cover image
+
+**Note**: The title and description are mandatory and cannot be hidden.
 
 ## 🏗️ Local Development
 

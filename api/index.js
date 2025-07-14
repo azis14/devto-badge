@@ -50,12 +50,16 @@ function sanitizeText(text) {
 // Main handler for the serverless function
 module.exports = async (req, res) => {
     try {
-        let { username, slug, url: postUrl, theme = 'light' } = req.query;
+        let { username, slug, url: postUrl, theme = 'light', hide = '' } = req.query;
 
         // Validate theme parameter
         if (!['light', 'dark'].includes(theme)) {
             theme = 'light';
         }
+
+        // Parse hide parameter
+        const hideComponents = hide ? hide.split(',').map(c => c.trim().toLowerCase()) : [];
+        const shouldHide = (component) => hideComponents.includes(component);
 
         // --- 1. Parse Input ---
         if (postUrl) {
@@ -89,7 +93,7 @@ module.exports = async (req, res) => {
         // --- 3. Fetch and Encode Images ---
         // We fetch the cover image and profile picture in parallel
         const [coverImageBase64, profileImageBase64] = await Promise.all([
-            article.cover_image ? toBase64(article.cover_image) : Promise.resolve(null),
+            article.cover_image && !shouldHide('image') ? toBase64(article.cover_image) : Promise.resolve(null),
             article.user.profile_image_90 ? toBase64(article.user.profile_image_90) : Promise.resolve(null)
         ]);
 
@@ -127,7 +131,11 @@ module.exports = async (req, res) => {
             }
         }
         
-        const tagsString = tags.slice(0, 3).map(tag => `#${tag}`).join('  ');
+        const tagsString = !shouldHide('tags') ? tags.slice(0, 3).map(tag => `#${tag}`).join('  ') : '';
+
+        // Calculate dynamic positioning based on hidden elements
+        const hasImage = coverImageBase64 && !shouldHide('image');
+        const contentStartY = hasImage ? 130 : 30;
 
         const svg = `
             <svg width="450" height="290" viewBox="0 0 450 290" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -180,7 +188,7 @@ module.exports = async (req, res) => {
                     <rect class="card bg-white border-gray-200 shadow-sm" x="0.5" y="0.5" width="449" height="289" rx="8" stroke-width="1"/>
                 
                     <!-- Cover Image -->
-                    ${coverImageBase64 ? `
+                    ${hasImage ? `
                         <defs>
                             <clipPath id="clipCover">
                                 <rect x="15" y="15" width="420" height="100" rx="6"/>
@@ -190,7 +198,7 @@ module.exports = async (req, res) => {
                     ` : ''}
 
                     <!-- Content Area -->
-                    <g transform="translate(15, 130)">
+                    <g transform="translate(15, ${contentStartY})">
                         <!-- Title -->
                         <text x="0" y="20" class="text-gray-900 text-lg font-bold">${titleLine1}</text>
                         ${titleLine2 ? `<text x="0" y="42" class="text-gray-900 text-lg font-bold">${titleLine2}</text>` : ''}
@@ -216,8 +224,14 @@ module.exports = async (req, res) => {
 
                         <!-- Bottom Stats -->
                         <g transform="translate(0, ${descLine1 ? (descLine2 ? '135' : '125') : '115'})">
-                             <text class="text-gray-500 text-xs font-medium">❤️ ${public_reactions_count} Reactions  •  ${reading_time_minutes} min read</text>
-                             <text x="420" y="0" text-anchor="end" class="text-indigo-600 text-xs font-semibold">${sanitizeText(tagsString)}</text>
+                             ${!shouldHide('reactions') || !shouldHide('minreads') ? `
+                                 <text class="text-gray-500 text-xs font-medium">
+                                     ${!shouldHide('reactions') ? `${public_reactions_count} Reactions` : ''}
+                                     ${!shouldHide('reactions') && !shouldHide('minreads') ? '  •  ' : ''}
+                                     ${!shouldHide('minreads') ? `${reading_time_minutes} min read` : ''}
+                                 </text>
+                             ` : ''}
+                             ${tagsString ? `<text x="420" y="0" text-anchor="end" class="text-indigo-600 text-xs font-semibold">${sanitizeText(tagsString)}</text>` : ''}
                         </g>
                     </g>
                 </g>
