@@ -1,5 +1,6 @@
 # Dev.to Badge
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤-ea4aaa?logo=github-sponsors)](https://github.com/sponsors/azis14)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000)](https://nodejs.org/en)
 [![Dev.to](https://img.shields.io/badge/Dev.to-0A0A0A?logo=devdotto&logoColor=white)](https://dev.to/)
@@ -22,18 +23,18 @@ Generate beautiful SVG badges for your Dev.to articles that can be embedded anyw
 
 ## 📖 Usage
 
-Once deployed, you can generate badges using these methods:
+The project is hosted on [Vercel](https://vercel.com). You can generate badges using these methods:
 
 ### Method 1: Using Username and Slug
 
 ```markdown
-![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG)
+![Dev.to Article](https://devto-badge.vercel.app/api?username=YOUR_DEVTO_USERNAME&slug=YOUR_ARTICLE_SLUG)
 ```
 
 ### Method 2: Using Full Article URL
 
 ```markdown
-![Dev.to Article](https://your-app.vercel.app/api?url=https://dev.to/YOUR_USERNAME/YOUR_ARTICLE_SLUG)
+![Dev.to Article](https://devto-badge.vercel.app/api?url=https://dev.to/YOUR_DEVTO_USERNAME/YOUR_ARTICLE_SLUG)
 ```
 
 ### With Theme Support
@@ -41,7 +42,7 @@ Once deployed, you can generate badges using these methods:
 Add `&theme=dark` for dark mode:
 
 ```markdown
-![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG&theme=dark)
+![Dev.to Article](https://devto-badge.vercel.app/api?username=YOUR_DEVTO_USERNAME&slug=YOUR_ARTICLE_SLUG&theme=dark)
 ```
 
 ### Hiding Components
@@ -49,7 +50,7 @@ Add `&theme=dark` for dark mode:
 Hide specific components using the `hide` parameter:
 
 ```markdown
-![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG&hide=reactions,tags)
+![Dev.to Article](https://devto-badge.vercel.app/api?username=YOUR_DEVTO_USERNAME&slug=YOUR_ARTICLE_SLUG&hide=reactions,tags)
 ```
 
 Available components to hide:
@@ -58,22 +59,19 @@ Available components to hide:
 - `minreads` - Hide the reading time
 - `image` - Hide the cover image
 
-Example hiding multiple components:
-```markdown
-![Dev.to Article](https://your-app.vercel.app/api?username=YOUR_USERNAME&slug=YOUR_ARTICLE_SLUG&hide=reactions,tags,minreads,image)
-```
-
 ## 🎯 Examples
 
 ### Light Theme (Default)
 ```markdown
-![Dev.to Article](https://your-app.vercel.app/api?username=ben&slug=what-s-new-in-devto-4f7j)
+![Example 1](https://devto-badge.vercel.app/api?url=https://dev.to/muhammadazis/the-better-approach-to-learn-new-things-a92)
 ```
+![Example 1](https://devto-badge.vercel.app/api?url=https://dev.to/muhammadazis/the-better-approach-to-learn-new-things-a92)
 
 ### Dark Theme
 ```markdown
-![Dev.to Article](https://your-app.vercel.app/api?username=ben&slug=what-s-new-in-devto-4f7j&theme=dark)
+![Example 2](https://devto-badge.vercel.app/api?username=muhammadazis&slug=3-main-aspects-to-boost-life-career-35h4&theme=dark)
 ```
+![Example 2](https://devto-badge.vercel.app/api?username=muhammadazis&slug=3-main-aspects-to-boost-life-career-35h4&theme=dark)
 
 ## 🛠️ API Parameters
 
@@ -108,7 +106,7 @@ The `hide` parameter accepts a comma-separated list of the following values:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/devto-badge.git
+git clone https://github.com/azis14/devto-badge.git
 cd devto-badge
 ```
 
