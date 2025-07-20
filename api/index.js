@@ -138,7 +138,7 @@ module.exports = async (req, res) => {
         const contentStartY = hasImage ? 130 : 30;
 
         const svg = `
-            <svg width="450" height="290" viewBox="0 0 450 290" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg width="385" height="320" viewBox="0 0 385 320" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style>
                     /* Base styles */
                     .card {
@@ -185,32 +185,35 @@ module.exports = async (req, res) => {
                 
                 <g class="${theme}">
                     <!-- Card Background with shadow -->
-                    <rect class="card bg-white border-gray-200 shadow-sm" x="0.5" y="0.5" width="449" height="289" rx="8" stroke-width="1"/>
+                    <rect class="card bg-white border-gray-200 shadow-sm" x="0.5" y="0.5" width="384" height="319" rx="8" stroke-width="1"/>
                 
                     <!-- Cover Image -->
                     ${hasImage ? `
                         <defs>
                             <clipPath id="clipCover">
-                                <rect x="15" y="15" width="420" height="100" rx="6"/>
+                                <rect x="15" y="15" width="350" height="120" rx="6"/>
                             </clipPath>
                         </defs>
-                        <image href="${coverImageBase64}" x="15" y="15" height="100" width="420" clip-path="url(#clipCover)" preserveAspectRatio="xMidYMid slice" opacity="0.95"/>
+                        <image href="${coverImageBase64}" x="15" y="15" height="120" width="350" clip-path="url(#clipCover)" preserveAspectRatio="xMidYMid slice" opacity="0.95"/>
                     ` : ''}
 
                     <!-- Content Area -->
                     <g transform="translate(15, ${contentStartY})">
                         <!-- Title -->
-                        <text x="0" y="20" class="text-gray-900 text-lg font-bold">${titleLine1}</text>
-                        ${titleLine2 ? `<text x="0" y="42" class="text-gray-900 text-lg font-bold">${titleLine2}</text>` : ''}
+                        <text x="0" y="40" class="text-gray-900 text-lg font-bold">${titleLine1}</text>
+                        ${titleLine2 ? `<text x="0" y="52" class="text-gray-900 text-lg font-bold">${titleLine2}</text>` : ''}
+
+                        <!-- Tags -->
+                        ${tagsString ? `<text x="0" y="${titleLine2 ? '70' : '58'}" class="text-indigo-600 text-xs font-semibold">${sanitizeText(tagsString)}</text>` : ''}
                         
                         <!-- Description -->
                         ${descLine1 ? `
-                            <text x="0" y="${titleLine2 ? '65' : '43'}" class="text-gray-600 text-base">${descLine1}</text>
-                            ${descLine2 ? `<text x="0" y="${titleLine2 ? '83' : '61'}" class="text-gray-600 text-base">${descLine2}</text>` : ''}
+                            <text x="0" y="${titleLine2 ? '92' : '80'}" class="text-gray-600 text-base">${descLine1}</text>
+                            ${descLine2 ? `<text x="0" y="${titleLine2 ? '107' : '95'}" class="text-gray-600 text-base">${descLine2}</text>` : ''}
                         ` : ''}
                         
                         <!-- Author Info -->
-                        <g transform="translate(0, ${descLine1 ? (descLine2 ? '90' : '80') : '70'})">
+                        <g transform="translate(0, ${descLine1 ? (descLine2 ? '120' : '105') : '90'})">
                             ${profileImageBase64 ? `
                                 <defs>
                                     <clipPath id="clipAvatar">
@@ -219,19 +222,14 @@ module.exports = async (req, res) => {
                                 </defs>
                                 <image href="${profileImageBase64}" x="0" y="0" height="28" width="28" clip-path="url(#clipAvatar)"/>
                             ` : ''}
-                            <text x="36" y="19" class="text-gray-700 text-sm font-medium">${sanitizeText(user.name)}</text>
-                        </g>
-
-                        <!-- Bottom Stats -->
-                        <g transform="translate(0, ${descLine1 ? (descLine2 ? '135' : '125') : '115'})">
-                             ${!shouldHide('reactions') || !shouldHide('minreads') ? `
-                                 <text class="text-gray-500 text-xs font-medium">
+                            <text x="36" y="12" class="text-gray-700 text-sm font-medium">${sanitizeText(user.name)}</text>
+                            ${!shouldHide('reactions') || !shouldHide('minreads') ? `
+                                 <text x="36" y="28" class="text-gray-500 text-xs font-medium">
                                      ${!shouldHide('reactions') ? `${public_reactions_count} Reactions` : ''}
                                      ${!shouldHide('reactions') && !shouldHide('minreads') ? '  •  ' : ''}
                                      ${!shouldHide('minreads') ? `${reading_time_minutes} min read` : ''}
                                  </text>
                              ` : ''}
-                             ${tagsString ? `<text x="420" y="0" text-anchor="end" class="text-indigo-600 text-xs font-semibold">${sanitizeText(tagsString)}</text>` : ''}
                         </g>
                     </g>
                 </g>
